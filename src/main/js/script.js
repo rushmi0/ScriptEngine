@@ -26,7 +26,7 @@ function classLoader(jarPath) {
     }
 }
 
-var jarPath = "/home/rushmi0/items/dev/kotlin/JVM/EngineScript/src/main/resources/library-1.0-SNAPSHOT.jar";
+var jarPath = "/home/rushmi0/items/dev/kotlin/JVM/kotlin-jvm-lib/library/build/libs/library-1.0-SNAPSHOT.jar";
 classLoader(jarPath)
 
 
@@ -43,7 +43,8 @@ function plugin(className) {
     }
 }
 
-var platform = plugin('org.example.core.JVMPlatform');
+var platform = plugin('org.example.core.PlatformInfo');
 if (platform !== null) {
-    print("✔️ Instance created: " + platform.version);
+     print("✔️ OS: " + platform.os);
+     print("✔️ JVM: " + platform.jvm);
 }
