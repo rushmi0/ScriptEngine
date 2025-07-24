@@ -5,46 +5,47 @@ var Class = Java.type("java.lang.Class");
 
 var loadedClassLoader = null;
 
+function loadJar(path) {
+    var file = new File(path);
+    if (!file.exists()) {
+        print("❌ JAR not found: " + path);
+        return false;
+    }
 
-function classLoader(jarPath) {
     try {
-        var jarFile = new File(jarPath);
-        if (!jarFile.exists()) {
-            throw new Error("❌ JAR file not found: " + jarPath);
-        }
-
-        var jarURL = jarFile.toURI().toURL();
-        var currentClassLoader = Thread.currentThread().getContextClassLoader();
-        loadedClassLoader = new URLClassLoader([jarURL], currentClassLoader);
+        var url = file.toURI().toURL();
+        loadedClassLoader = new URLClassLoader([url], Thread.currentThread().getContextClassLoader());
         Thread.currentThread().setContextClassLoader(loadedClassLoader);
-
-        print("✔️ Loaded JAR from: " + jarURL);
+        print("✔️ Loaded: " + url);
         return true;
     } catch (e) {
-        print("❌ Failed to load JAR: " + e);
+        print("❌ Load failed: " + e.message);
         return false;
     }
 }
 
-var jarPath = "/home/rushmi0/items/dev/kotlin/JVM/kotlin-jvm-lib/library/build/libs/library-1.0-SNAPSHOT.jar";
-classLoader(jarPath)
-
-
-var Class = Java.type("java.lang.Class");
-
 function plugin(className) {
+    if (!loadedClassLoader) {
+        print("❌ JAR not loaded.");
+        return null;
+    }
+
     try {
-        var clazz = Class.forName(className, true, loadedClassLoader);
-        var instance = clazz.getDeclaredConstructor().newInstance();
-        return instance;
+        var cls = Class.forName(className, true, loadedClassLoader);
+        return cls.getDeclaredConstructor().newInstance();
     } catch (e) {
-        print("❌ Failed to create instance: " + e);
+        print("❌ Instance error: " + e.message);
         return null;
     }
 }
 
-var platform = plugin('org.example.core.PlatformInfo');
-if (platform !== null) {
-     print("✔️ OS: " + platform.os);
-     print("✔️ JVM: " + platform.jvm);
+// === Example usage ===
+//var jar = "/path/to/library.jar";
+var jar = "/home/rushmi0/items/dev/kotlin/JVM/kotlin-jvm-lib/library/build/libs/library-1.0-SNAPSHOT.jar"
+if (loadJar(jar)) {
+    var instance = plugin("org.example.core.PlatformInfo");
+    if (instance) {
+        print("✔️ OS: " + instance.os);
+        print("✔️ JVM: " + instance.jvm);
+    }
 }
