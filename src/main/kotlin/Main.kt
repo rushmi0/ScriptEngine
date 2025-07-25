@@ -29,7 +29,7 @@ fun main() {
                 engine.eval(reader)
             }
         } catch (e: ScriptException) {
-            println("❌ Script error in file ${jsFile.name}:")
+            println("❌ Script error in file ${jsFile.name}: $e")
             e.printStackTrace()
         } catch (e: Exception) {
             println("❌ General error in file ${jsFile.name}:")

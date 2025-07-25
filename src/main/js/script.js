@@ -41,7 +41,7 @@ function plugin(className) {
 
 // === Example usage ===
 //var jar = "/path/to/library.jar";
-var jar = "/home/rushmi0/items/dev/kotlin/JVM/kotlin-jvm-lib/library/build/libs/library-1.0-SNAPSHOT.jar"
+var jar = "C:/Users/bb25004/items/dev/Kotlin/JVM/kotlin-jvm-lib/library/build/libs/library-1.0-SNAPSHOT.jar"
 if (loadJar(jar)) {
     var instance = plugin("org.example.core.PlatformInfo");
     if (instance) {
