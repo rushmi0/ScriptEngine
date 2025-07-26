@@ -23,7 +23,7 @@ fun main() {
     }
 
     jsFiles.forEach { jsFile ->
-        println("▶️ Running script: ${jsFile.name}")
+        println("\n▶️ Running script: ${jsFile.name}")
         try {
             FileReader(jsFile).use { reader ->
                 engine.eval(reader)
