@@ -149,15 +149,32 @@ if (Plugins.load(path)) {
         print("✔️ JVM: " + info.jvm);
     }
 
-    var keys = Plugins.use("rust.nostr.sdk.Keys").generate();
-    if (keys) {
-        var sk = keys.secretKey();
-        var pk = keys.publicKey();
+    var Keys = Plugins.use("rust.nostr.sdk.Keys");
+    if (Keys) {
+        var newKey = Keys.generate();
+        var sk = newKey.secretKey();
+        var pk = newKey.publicKey();
 
-        print("Private Key: " + sk.toHex());
-        print("Public Key: " + pk.toHex());
-        print("NSEC: " + sk.toBech32());
-        print("NPUB: " + pk.toBech32());
+        var skHex = sk.toHex();
+        var pkHex = pk.toHex();
+
+        var nsec = sk.toBech32();
+        var npub = pk.toBech32();
+
+        print("Private Key: " + skHex);
+        print("Public Key: " + pkHex);
+        print("NSEC: " + nsec);
+        print("NPUB: " + npub);
+
+        print();
+        var skeys = Keys.parse(nsec)
+        print(skeys.secretKey().toHex());
+        print(skeys.publicKey().toHex());
+
+        var SecretKey = Plugins.use("rust.nostr.sdk.SecretKey");
+        var secretKey = SecretKey.parse(skHex);
+        print(secretKey.toBech32());
+
     }
 
 }
