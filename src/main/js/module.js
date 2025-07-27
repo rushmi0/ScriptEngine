@@ -10,14 +10,23 @@ var Plugins = (function () {
 
     var loader = null;
     var repositories = [];
+    var saveDirPath = null;
 
-    function addRepository(url) {
+    function addRepository(url, localPath) {
         if (repositories.indexOf(url) === -1) {
             repositories.push(url);
         }
+        if (localPath) {
+            saveDirPath = localPath;
+        }
     }
 
-    function dependsOn(coord, saveDirPath) {
+    function dependsOn(coord) {
+        if (!saveDirPath) {
+            print("❌ Please call addRepository() with a local path before dependsOn().");
+            return false;
+        }
+
         var parts = coord.split(":");
         if (parts.length !== 3) {
             print("❌ Invalid coordinate: " + coord);
@@ -98,7 +107,6 @@ var Plugins = (function () {
         }
     }
 
-
     function use(target) {
         if (!loader) {
             print("❌ Loader not initialized.");
@@ -107,23 +115,17 @@ var Plugins = (function () {
 
         try {
             var cls = Class.forName(target, true, loader);
-
             try {
-                // ถ้ามี Companion object
                 return cls.getField("Companion").get(null);
             } catch (e) {
-                // ถ้าไม่มี Companion ให้สร้าง instance ปกติ
                 return cls.getDeclaredConstructor().newInstance();
             }
-
         } catch (e) {
             print("❌ Error loading class: " + target);
             print("   " + e.message);
             return null;
         }
     }
-
-
 
     return {
         addRepository: addRepository,
@@ -135,14 +137,15 @@ var Plugins = (function () {
 })();
 
 
-var path = "/home/rushmi0/items/dev/kotlin/JVM/ScriptEngine/src/main/resources";
 
-Plugins.addRepository("https://repo1.maven.org/maven2");
+var localPath = "/home/rushmi0/items/dev/kotlin/JVM/ScriptEngine/src/main/resources";
 
-Plugins.dependsOn("net.java.dev.jna:jna:5.17.0", path);
-Plugins.dependsOn("org.rust-nostr:nostr-sdk-jvm:0.42.1", path);
+Plugins.addRepository("https://repo1.maven.org/maven2", localPath);
 
-if (Plugins.load(path)) {
+Plugins.dependsOn("net.java.dev.jna:jna:5.17.0");
+Plugins.dependsOn("org.rust-nostr:nostr-sdk-jvm:0.42.1");
+
+if (Plugins.load(localPath)) {
     var info = Plugins.use("org.example.core.PlatformInfo");
     if (info) {
         print("✔️ OS: " + info.os);
